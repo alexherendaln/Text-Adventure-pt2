@@ -27,8 +27,13 @@ room_info = {
         "searchables": {},
         "talks":{"Police Chief":0},
         "exits": {"outside police station":2}
+    },
+    4:  {"entrance_txt": "You are in the inspectors office. There is a large desk where you can place the evidence you've collected.",
+        "searchables": {},
+        "talks": {},
+        "exits": {"Outside police station":2},
     }
-}
+    }
 
 #a simpler dictionary is like this one where instead of having many variables just lying around called item_1 we can bunch them into a dictionary
 #and give them values so we can call them like this: print(items_info[2]) which can be useful 
@@ -189,6 +194,37 @@ def look(current_room):
             return  # stop after one search
         else:
             print("You can't search that here.")
+            
+def place_evidence(current_room):
+    if current_room != 4:
+        print("You need to be in the office of the inspector to place evidence.")
+        return
+    
+    valid_evidence = [item for item in inventory if item != "Police badge"]
+    if not valid_evidence:
+        print("You have no evidence to place")
+        return
+    print("You can place the following evidences items on da table:")
+    for i, item in enumerate(valid_evidence):
+        print(f"{i}: {item}")
+        print("which evidence do you want to place?(or type 'Leave' to cancel)")
+        choice = input(">").strip().lower()
+        if choice == "Leave":
+            print("You decided not to place anything")
+            return
+        if not choice.isdigit() or int(choice) >= len(valid_evidence):
+            print("Invalid choice.")
+            return
+        item_to_place = valid_evidence[int(choice)]
+        if item_to_place in inventory:
+            print("You have already placed that item.")
+            return
+        evidence_table.append(item_to_place)
+        print(f"You place {item_to_place} on the Inspector's desk.")
+        if len(evidence_table) == 3:
+            print("\nThe Inspector reviews the evidence carefully...")
+            print("'This could be enough evidence to crack the case'he says.\n")
+        
 
 def move(current_room):
 
