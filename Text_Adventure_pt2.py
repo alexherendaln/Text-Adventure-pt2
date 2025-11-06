@@ -43,6 +43,16 @@ items_info = {
     5 : "You found nothing, or maybe you didn't search deep enough"
 }    
 
+# map searchable object keys to the item name that should be added to inventory
+items_lookup = {
+    "blood_pool": "Blood sample",
+    "fireplace": "Gun",
+    "cellphone": "Cellphone",
+    "dead_body": "Bullet",
+    "rubbish": "Used condom",
+    "furniture": "A crisp 5 dolla dolla bill",
+}
+
 npc_convo = {
     "neighbor": { 
         "inputs":{
@@ -121,8 +131,18 @@ npc_convo = {
     }
 }
 
-inventory = ["Police badge"]
-#hvad har man til at starte med? Ik en skid
+def show_inventory():
+    print("You have the following items in your inventory:")
+    if not inventory:
+        print("- (empty)")
+        return
+    for it in inventory:
+        print(f"- {it}")
+
+# start inventory should be three separate items so they can be checked/appended correctly
+# start inventory should be a mutable list so items can be appended
+inventory = ["Police badge", "Notebook", "Pen"]
+
 
 blood_collected = 0
 
@@ -150,11 +170,21 @@ def look(current_room):
             print("You stop searching.")
             return
         elif choice in room["searchables"]:
-            if choice == "blood_pool":
-                inventory.append("Blood sample")
             item_id = room["searchables"][choice]
             print(f"\nYou search the {choice}...")
             print(items_info[item_id])
+
+            # determine if this searchable yields an actual item to add
+            item_name = items_lookup.get(choice)
+            if item_name:
+                if item_name not in inventory:
+                    inventory.append(item_name)
+                    print("You added it to your inventory.")
+                else:
+                    print("You already have that item in your inventory.")
+            else:
+                print("You didn't find any usable item.")
+
             print("\n")
             return  # stop after one search
         else:
@@ -267,7 +297,8 @@ def help(current_room):
     print("talk: Talk to people in the current location.")
     print("help: Show this help message.")
     print("quit: Exit the game.")
-    print(f"In your inventory you have:\n {inventory}")
+    # print inventory using the pretty printer so it doesn't show list brackets/quotes
+    show_inventory()
     exits = room_info.get(current_room, {}).get("exits", {})
     if exits:
             print("\nExits from this room:")
@@ -284,7 +315,6 @@ def game_loop():
 
     # Display the room that we start in
     print(room_info[current_room]["entrance_txt"])
-
     # Enter the main loop, where the user can input commands.
     while True:
         raw = input("> ").strip()
@@ -332,6 +362,10 @@ def game_loop():
 
         elif cmd == "help":
             help(current_room)
+            continue
+
+        elif cmd == "inventory":
+            show_inventory()
             continue
 
         else:
