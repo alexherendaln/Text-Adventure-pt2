@@ -148,6 +148,7 @@ def show_inventory():
 # start inventory should be a mutable list so items can be appended
 inventory = ["Police badge", "Notebook", "Pen"]
 
+evidence_table = []
 
 blood_collected = 0
 
@@ -216,14 +217,15 @@ def place_evidence(current_room):
             print("Invalid choice.")
             return
         item_to_place = valid_evidence[int(choice)]
-        if item_to_place in inventory:
-            print("You have already placed that item.")
-            return
-        evidence_table.append(item_to_place)
-        print(f"You place {item_to_place} on the Inspector's desk.")
-        if len(evidence_table) == 3:
-            print("\nThe Inspector reviews the evidence carefully...")
-            print("'This could be enough evidence to crack the case'he says.\n")
+        if item_to_place in evidence_table:
+        print("You have already placed that item.")
+        return
+    evidence_table.append(item_to_place)
+    print(f"You place {item_to_place} on the Inspector's desk.")
+    if len(evidence_table) == 3:
+        print("\nThe Inspector reviews the evidence carefully...")
+        print("'This could be enough evidence to crack the case,' he says.\n")
+
         
 
 def move(current_room):
@@ -403,6 +405,8 @@ def game_loop():
         elif cmd == "inventory":
             show_inventory()
             continue
+              elif cmd == "place evidence":
+            place_evidence(current_room)
 
         else:
             print("I do not understand the command:", raw)
