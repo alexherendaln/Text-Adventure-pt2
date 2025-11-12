@@ -148,6 +148,11 @@ def show_inventory():
 # start inventory should be a mutable list so items can be appended
 inventory = ["Police badge", "Notebook", "Pen"]
 
+# global notebook storage
+notes = []
+
+# global evidence table storage
+evidence_table = []
 
 blood_collected = 0
 
@@ -323,23 +328,122 @@ def talk_to_person(current_room):
             print("not a person")
             continue
 
+def notebook():
+    """Interactive notebook where players can add, edit, delete, and view notes."""
+    print("\n--- NOTEBOOK ---")
+    print("Press Enter with empty input to exit.\n")
+    
+    while True:
+        print("\nNOTEBOOK MENU:")
+        print("1. View notes")
+        print("2. Add note")
+        print("3. Edit note")
+        print("4. Delete note")
+        print("(Press Enter to exit)")
+        
+        raw = input("> ").strip()
+        
+        # Exit if empty input
+        if raw == "":
+            print("Exiting notebook.\n")
+            return
+        
+        if raw.lower() == "quit":
+            quit()
+        
+        choice = raw.lower()
+        
+        if choice == "1":
+            # View notes
+            if not notes:
+                print("\nYou have no notes yet.")
+            else:
+                print("\n--- YOUR NOTES ---")
+                for i, note in enumerate(notes, 1):
+                    print(f"{i}. {note}")
+        
+        elif choice == "2":
+            # Add note
+            note_text = input("Write your note: ").strip()
+            if note_text:
+                notes.append(note_text)
+                print(f"Note added: '{note_text}'")
+            else:
+                print("No note was written.")
+        
+        elif choice == "3":
+            # Edit note
+            if not notes:
+                print("\nYou have no notes to edit.")
+            else:
+                print("\n--- YOUR NOTES ---")
+                for i, note in enumerate(notes, 1):
+                    print(f"{i}. {note}")
+                
+                try:
+                    note_index = int(input("Which note do you want to edit? (number): ").strip()) - 1
+                    if 0 <= note_index < len(notes):
+                        new_text = input("Write the new text: ").strip()
+                        if new_text:
+                            old_text = notes[note_index]
+                            notes[note_index] = new_text
+                            print(f"Note updated from '{old_text}' to '{new_text}'")
+                        else:
+                            print("No new text was written.")
+                    else:
+                        print("Invalid note number.")
+                except ValueError:
+                    print("Please enter a valid number.")
+        
+        elif choice == "4":
+            # Delete note
+            if not notes:
+                print("\nYou have no notes to delete.")
+            else:
+                print("\n--- YOUR NOTES ---")
+                for i, note in enumerate(notes, 1):
+                    print(f"{i}. {note}")
+                
+                try:
+                    note_index = int(input("Which note do you want to delete? (number): ").strip()) - 1
+                    if 0 <= note_index < len(notes):
+                        deleted_note = notes.pop(note_index)
+                        print(f"Note deleted: '{deleted_note}'")
+                    else:
+                        print("Invalid note number.")
+                except ValueError:
+                    print("Please enter a valid number.")
+        
+        else:
+            print("I do not understand that command.")
+
 ### The main game loop ###
 
 def help(current_room):
     #Displays help information to the player.
-    print("Available commands:")
+    print("---Available commands---")
+    print("-----------------------------------------------------")
     print("move: Move to a different location.")
+    print("-----------------------------------------------------")
     print("search: Search the current location for items.")
+    print("-----------------------------------------------------")
+    print("notebook: Open your notebook to view/add/edit notes.")
+    print("-----------------------------------------------------")
     print("talk: Talk to people in the current location.")
+    print("-----------------------------------------------------")
     print("help: Show this help message.")
+    print("-----------------------------------------------------")
     print("quit: Exit the game.")
-    # print inventory using the pretty printer so it doesn't show list brackets/quotes
-    show_inventory()
+    print("-----------------------------------------------------")
+    print("inventory: Show your current inventory.")
+    print("-----------------------------------------------------")
     exits = room_info.get(current_room, {}).get("exits", {})
     if exits:
-            print("\nExits from this room:")
+            print("Exits from this room:")
             for exit_name in exits:
                 print(f"- {exit_name}")
+                print("-----------------------------------------------------")
+                print("\n")
     else:
             print("\nThere are no exits from this room.")
 
@@ -404,8 +508,13 @@ def game_loop():
             show_inventory()
             continue
 
+        elif cmd == "notebook":
+            notebook()
+            continue
+
         else:
             print("I do not understand the command:", raw)
+            print("\n")
 
 # Start the game!
 
