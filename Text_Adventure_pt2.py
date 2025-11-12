@@ -148,10 +148,13 @@ def show_inventory():
 # start inventory should be a mutable list so items can be appended
 inventory = ["Police badge", "Notebook", "Pen"]
 
+<<<<<<< HEAD
 # global notebook storage
 notes = []
 
 # global evidence table storage
+=======
+>>>>>>> 094c75118a4cd5e79bda7a986c7fc243526e7045
 evidence_table = []
 
 blood_collected = 0
@@ -507,6 +510,8 @@ def game_loop():
         elif cmd == "inventory":
             show_inventory()
             continue
+              elif cmd == "place evidence":
+            place_evidence(current_room)
 
         elif cmd == "notebook":
             notebook()
