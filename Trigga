@@ -1,0 +1,505 @@
+#a dictionary is like a variable with sub categories which you can filter through, this dict room_info's first subgategory is the different rooms so we can go to each room and check the subcategories and their values.
+# so if you were to print out jsut the room_info dict it would show all the infor in it including the subcategories and their values, you can narrow it down by using square brackets fx. print(room_info[0]) which will then only show the values in the first room.
+#in this case we fx use the same subcategories in each one so we can structure it like this: print(room_info[current_room][entrance_txt]) to print the entrance_txt no matter what room we are in.
+#we do also have arrays in this where there are mutiple "variables" in one subkategory fx "searchables" where they are also given a corresponding value.
+
+room_info = {
+    0: {
+        "entrance_txt": "You are in the starter room. You see a dead body, and an entrance to the outside, type 'help' to get a kick start",
+        "searchables": {"fireplace":0, "cellphone": 1, "dead_body":2, "blood_pool":3, "rubbish":4, "furniture": 5},
+        "talks": {},
+        "exits": {"outside":1}
+    },
+    1: {
+        "entrance_txt": "you are outside and there's 3 people, his neighbor, his ex, his friend, and a homeless man",
+        "searchables": {},
+        "talks":{"neighbor":0,"ex":1,"friend":2,"homeless man":3},
+        "exits": {"inside":0, "outside policestation":2}
+    },
+    2:  {
+        "entrance_txt": "You've made your way to the front of the police station. There's 2 police officers outside, Doakes and Dexter",
+        "searchables": {},
+        "talks":{"Doakes":0,"Dexter":1},
+        "exits": {"outside apartment":1, "inside policestation":2}
+    },
+    3:  {
+        "entrance_txt": "You're inside the police station now, and you see the Police Chief",
+        "searchables": {},
+        "talks":{"Police Chief":0},
+        "exits": {"outside police station":2}
+    },
+    4:  {"entrance_txt": "You are in the inspectors office. There is a large desk where you can place the evidence you've collected.",
+        "searchables": {},
+        "talks": {},
+        "exits": {"Outside police station":2},
+    }
+    }
+
+items_info = {
+    0 : "the fire is burning and a gun in the flames, you scoop it out",
+    1 : "A cell phone with the last call to his ex",
+    2 : "You find a bullet after a deep search",
+    3 : "Test blood to identify body",
+    4 : "Extra large (used) condom, most likely used for a hooker",
+    5 : "You found nothing, or maybe you didn't search deep enough"
+}    
+
+items_lookup = {
+    "blood_pool": "Blood sample",
+    "fireplace": "Gun",
+    "cellphone": "Cellphone",
+    "dead_body": "Bullet",
+    "rubbish": "Used condom",
+    "furniture": "A crisp 5 dolla dolla bill",
+}
+
+npc_convo = {
+    "neighbor": { 
+        "inputs":{
+            0 : "What did you think of the victim?",
+            1 : "What were you doing the other day?",
+            2 : "What do you know about the victims best friend?",
+        },
+        "outputs":{
+            0 : "He was noisy and annoying",
+            1 : "I was at home watering my plants",
+            2 : "They were in a fight about a few months ago"
+        },
+    },
+    "friend": {
+        "inputs":{
+            0: "What were your relation to him?",
+            1: "Do you ever think he was anoying, or irritating?",
+        },
+        "outputs":{
+            0: "We've been really good friends for a long time, but since we became older we haven't talked that much",
+            1: "We had a pretty big argument a few months ago, but no, not necessarily"
+        },
+    },
+    "ex": {
+        "inputs":{
+            0: "When did you two break up, and was it hard?",
+            1: "How well do you know him, and for how long?",
+            2: "Have either one of you tried getting back with the other?",
+        },
+        "outputs":{
+            0: "We broke up about 6 months because i cheated on him with his friend. I think it was a bit hard for him, but he got over it i guess",
+            1: "we've known each other for like 7 years in highschool. We was like the cute couple everyone dreamt of being, but it just got bored at the end",
+            2: "He tried asking me out on a date like a month or two ago, but i rejected his little pity ass"
+        }
+    },
+    "homeless man":{
+        "inputs":{
+            0: "Do you know the guy that got killed?",
+            1: "Did you see or hear anything that could've led to his death?",
+            2: "Why the hell are you naked?",
+        },
+        "outputs":{
+            0: "You provoked the man, and he stabbed you to death",
+            1: "You provoked the man, and he stabbed you to death",
+            2: "You provoked the man, and he stabbed you to death"
+        },
+    },
+    "Doakes": {
+        "inputs": {
+            0: "Who are you suspicious of?",
+            1: "Why you be looking at Dexter like that?",
+            2: "Do you think this was a professional job?",
+            3: "How long have you been on the force?",
+        },
+        "outputs": {
+            0: "Everyone's a suspect until I say otherwise. But something about this case stinks...",
+            1: "That guy gives me the creeps. And i know he is up to something... i just can't prove it",
+            2: "Shot with a gun anyone could have done it really.",
+            3: "Been on the force for over a decade. Seen all kinds of scum, and I know when something doesn't add up like the weird guy by the van -Dexter-."
+        },
+    },
+    "Dexter": {
+        "inputs": {
+            0: "What exactly do you do for a living?",
+            1: "You seem tense, are you okay?",
+            2: "What do you think about Sergeant Doakes?",
+            3: "Do you think this done by a professional job?",
+        },
+        "outputs": {
+            0: "I'm a blood spatter analyst. Not really much to special...",
+            1: "I'm fine. Just... tired. These cases be making me feel like shit",
+            2: "Doakes? He's... persistent. Always watching me like I'm hiding something.",
+            3: "Yeah i dont know, not my area of specialty to answer if it was a pro that did it ask Doakes he would know",
+            4: "Oh yeah i can help, give me a minute...... and here i got it, it seems its someone on the police database who did this, but its blocked somehow, like someone doesnt want to be found out."
+        },
+    }
+}
+
+def show_inventory():
+    print("You have the following items in your inventory:")
+    if not inventory:
+        print("- (empty)")
+        return
+    for it in inventory:
+            print(f"- {it}")    
+
+inventory = ["Police badge", "Notebook", "Pen"]
+notes = []
+evidence_table = []
+blood_collected = 0
+
+def look(current_room):
+    global blood_collected
+    room = room_info[current_room]
+
+    if not room["searchables"]:
+        print("There's nothing to search here.")
+        return
+    
+    while True:
+        print("You can search the following objects:")
+        for item in room["searchables"]:
+            print(f"- {item}")
+
+        print("\nWhat do you want to search? (or type 'leave' to stop searching)")
+        raw = input(">")
+        if raw.strip().lower() == "quit":
+            quit()
+        choice = raw.strip().lower()
+
+        if choice == "leave":
+            print("You stop searching.")
+            return
+        elif choice in room["searchables"]:
+            item_id = room["searchables"][choice]
+            print(f"\nYou search the {choice}...")
+            print(items_info[item_id])
+
+            item_name = items_lookup.get(choice)
+            if item_name:
+                if item_name not in inventory:
+                    inventory.append(item_name)
+                    print("You added it to your inventory.")
+                else:
+                    print("You already have that item in your inventory.")
+            else:
+                print("You didn't find any usable item.")
+
+            print("\n")
+            return
+        else:
+            print("You can't search that here.")
+            
+def place_evidence(current_room):
+    global evidence_table
+
+    if current_room != 4:
+        print("You need to be in the office of the inspector to place evidence.")
+        return
+    
+    valid_evidence = [item for item in inventory if item != "Police badge"]
+    if not valid_evidence:
+        print("You have no evidence to place")
+        return
+    print("You can place the following evidences items on da table:")
+    for i, item in enumerate(valid_evidence):
+        print(f"{i}: {item}")
+    print("which evidence do you want to place?(or type 'Leave' to cancel)")
+    choice = input(">").strip().lower()
+
+    if choice == "leave":
+        print("You decided not to place anything")
+        return
+    if not choice.isdigit() or int(choice) >= len(valid_evidence):
+        print("Invalid choice.")
+        return
+
+    item_to_place = valid_evidence[int(choice)]
+
+    if item_to_place in evidence_table:
+        print("You have already placed that item.")
+        return
+
+    evidence_table.append(item_to_place)
+    print(f"You place {item_to_place} on the Inspector's desk.")
+
+    # -----------------------------
+    REQUIRED_EVIDENCE = {
+        "Gun",
+        "Cellphone",
+        "Bullet",
+        "Blood sample",
+        "Used condom"
+    }
+
+    if set(evidence_table) == REQUIRED_EVIDENCE:
+        print("\nThe Inspector looks at the fully assembled evidence...")
+        print("He stares at you after having looked at the evidence")
+        print("\n'Well...', he whispers. 'You actually figured it out.'")
+        print("'That's a problem for me, detective.'")
+        print("\nHe reaches inside his coat and before you could even react...")
+        print("Kaplamo! he fires a shot")
+        print("\nYou fall as your visionn fades black")
+        print("\n 🥀🥀😭 GAME OVER — The Police Chief was the killer now you dead")
+        quit()
+
+    if len(evidence_table) == 3:
+        print("\nThe Inspector reviews the evidence carefully...")
+        print("'This could be enough evidence to crack the case' he says.\n")
+
+def move(current_room):
+    while True:
+        exits = room_info[current_room]["exits"]
+        print("You can go to the following places:")
+        for place in exits:
+            print(f"- {place}")
+
+        print("Direction? (type 'leave' to stay in the same place)")
+        raw = input(">").strip()
+        if raw.lower() == "quit":
+            quit()
+        direction = raw.lower()
+
+        if direction in exits:
+            return exits[direction]
+        elif direction == "leave":
+            return None
+        else:
+            all_exits = set()
+            for room in room_info.values():
+                all_exits.update(room.get("exits", {}).keys())
+            if direction in all_exits:
+                print("this location hasn't been unlocked yet... Or maybe unlocked???")
+            else:
+                print("not a direction")
+            continue
+
+def print_inputs(person):
+    counter = 0
+    for row in npc_convo[person]["inputs"]:
+        print(f"{counter}   {npc_convo[person]['inputs'][counter]}")
+        counter += 1
+
+def conversation(person):
+    while True:
+        print_inputs(person)
+        if person == "Dexter" and "Blood sample" in inventory:
+            print("4   Can you help me with analysing this blood?")
+
+        print('"leave" to leave the conversation')
+        raw = input(">")
+        if raw.strip().lower() == "quit":
+            quit()
+        input_sentence = raw.strip()
+
+        if input_sentence == "4" and "Blood sample" in inventory and person == "Dexter":
+            print(npc_convo[person]["outputs"][4])
+            continue
+
+        if input_sentence == "leave":
+            print(f"You left {person} for themselves\n")
+            return
+        if not input_sentence.isdigit():
+            print("not an input")
+            continue
+        input_num = int(input_sentence)
+
+        if input_num in npc_convo[person]["inputs"]:
+            print(f"{person} answers:")
+            print(npc_convo[person]["outputs"][input_num])
+            if person == "homeless man" and "you provoked the man" in npc_convo[person]["outputs"][input_num].lower():
+                print("Wow, you really suck at this detective thing. Games over.")
+                quit()
+            print("\n")
+        else:
+            print("not an input")
+            continue
+
+def talk_to_person(current_room):
+    while True:
+        print("Who do you want to talk to?")
+        raw = input(">")
+        if raw.strip().lower() == "quit":
+            quit()
+        person = raw
+        
+        if person in room_info[current_room]["talks"]:
+            conversation(person)
+            return 
+        elif person == "leave":
+            return
+        else:
+            print("not a person")
+            continue
+
+def notebook():
+    print("\n--- NOTEBOOK ---")
+    print("Press Enter with empty input to exit.\n")
+    
+    while True:
+        print("\nNOTEBOOK MENU:")
+        print("1. View notes")
+        print("2. Add note")
+        print("3. Edit note")
+        print("4. Delete note")
+        print("(Press Enter to exit)")
+        
+        raw = input("> ").strip()
+        
+        if raw == "":
+            print("Exiting notebook.\n")
+            return
+        
+        if raw.lower() == "quit":
+            quit()
+        
+        choice = raw.lower()
+        
+        if choice == "1":
+            if not notes:
+                print("\nYou have no notes yet.")
+            else:
+                print("\n--- YOUR NOTES ---")
+                for i, note in enumerate(notes, 1):
+                    print(f"{i}. {note}")
+        
+        elif choice == "2":
+            note_text = input("Write your note: ").strip()
+            if note_text:
+                notes.append(note_text)
+                print(f"Note added: '{note_text}'")
+            else:
+                print("No note was written.")
+        
+        elif choice == "3":
+            if not notes:
+                print("\nYou have no notes to edit.")
+            else:
+                print("\n--- YOUR NOTES ---")
+                for i, note in enumerate(notes, 1):
+                    print(f"{i}. {note}")
+                
+                try:
+                    note_index = int(input("Which note do you want to edit? (number): ").strip()) - 1
+                    if 0 <= note_index < len(notes):
+                        new_text = input("Write the new text: ").strip()
+                        if new_text:
+                            old_text = notes[note_index]
+                            notes[note_index] = new_text
+                            print(f"Note updated from '{old_text}' to '{new_text}'")
+                        else:
+                            print("No new text was written.")
+                    else:
+                        print("Invalid note number.")
+                except ValueError:
+                    print("Please enter a valid number.")
+        
+        elif choice == "4":
+            if not notes:
+                print("\nYou have no notes to delete.")
+            else:
+                print("\n--- YOUR NOTES ---")
+                for i, note in enumerate(notes, 1):
+                    print(f"{i}. {note}")
+                
+                try:
+                    note_index = int(input("Which note do you want to delete? (number): ").strip()) - 1
+                    if 0 <= note_index < len(notes):
+                        deleted_note = notes.pop(note_index)
+                        print(f"Note deleted: '{deleted_note}'")
+                    else:
+                        print("Invalid note number.")
+                except ValueError:
+                    print("Please enter a valid number.")
+        
+        else:
+            print("I do not understand that command.")
+
+def help(current_room):
+    print("---Available commands---")
+    print("-----------------------------------------------------")
+    print("move: Move to a different location.")
+    print("-----------------------------------------------------")
+    print("search: Search the current location for items.")
+    print("-----------------------------------------------------")
+    print("notebook: Open your notebook to view/add/edit notes.")
+    print("-----------------------------------------------------")
+    print("talk: Talk to people in the current location.")
+    print("-----------------------------------------------------")
+    print("help: Show this help message.")
+    print("-----------------------------------------------------")
+    print("quit: Exit the game.")
+    print("-----------------------------------------------------")
+    print("inventory: Show your current inventory.")
+    print("-----------------------------------------------------")
+    exits = room_info.get(current_room, {}).get("exits", {})
+    if exits:
+            print("Exits from this room:")
+            for exit_name in exits:
+                print(f"- {exit_name}")
+                print("-----------------------------------------------------")
+                print("\n")
+    else:
+            print("\nThere are no exits from this room.")
+
+def game_loop():
+    current_room = 0
+    print(room_info[current_room]["entrance_txt"])
+
+    while True:
+        raw = input("> ").strip()
+        if not raw:
+            continue
+
+        lower_raw = raw.lower()
+
+        ignore_substrings = ("python", ".py", "c:", "c:/", "c\\", "&", "run", "ps ", "powershell")
+        if any(substr in lower_raw for substr in ignore_substrings):
+            continue
+        if lower_raw.startswith(("&", "cd ", "set ")):
+            continue
+
+        cmd = lower_raw
+
+        if cmd == "quit":
+            break
+
+        elif cmd == "search":
+            look(current_room)
+            continue
+
+        elif cmd == "move":
+            new_room = move(current_room)
+            if new_room is None:
+                continue
+            if new_room in room_info:
+                current_room = new_room
+                print(room_info[current_room]["entrance_txt"])
+            else:
+                print("You can't go that way.")
+            continue
+
+        elif cmd == "talk":
+            if current_room == 0:
+                print("There is no one to talk to here.")
+                continue
+            talk_to_person(current_room)
+            continue
+
+        elif cmd == "help":
+            help(current_room)
+            continue
+
+        elif cmd == "inventory":
+            show_inventory()
+            continue
+
+        elif cmd == "place evidence":
+            place_evidence(current_room)
+            continue
+
+        elif cmd == "notebook":
+            notebook()
+            continue
+
+        else:
+            print("I do not understand the command:", raw)
+            print("\n")
+
+game_loop()
