@@ -142,19 +142,16 @@ def show_inventory():
         print("- (empty)")
         return
     for it in inventory:
-        print(f"- {it}")
+            print(f"- {it}")    
 
 # start inventory should be three separate items so they can be checked/appended correctly
 # start inventory should be a mutable list so items can be appended
 inventory = ["Police badge", "Notebook", "Pen"]
 
-<<<<<<< HEAD
 # global notebook storage
 notes = []
 
-# global evidence table storage
-=======
->>>>>>> 094c75118a4cd5e79bda7a986c7fc243526e7045
+    # global evidence table storage
 evidence_table = []
 
 blood_collected = 0
