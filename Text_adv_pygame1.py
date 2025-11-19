@@ -43,6 +43,15 @@ room_info = {
     }
 }
     
+items_lookup = {
+    "blood_pool": "Blood sample",
+    "fireplace": "Gun",
+    "cellphone": "Cellphone",
+    "dead_body": "Bullet",
+    "rubbish": "Used condom",
+    "furniture": "A crisp 5 dolla dolla bill",
+}
+
 items_info = {
     0 : "the fire is burning and a gun in the flames, you scoop it out",
     1 : "A cell phone with the last call to his ex",
@@ -140,42 +149,6 @@ def quit_game():
     pygame.quit()
     exit()
 
-def search():
-            """Allows the player to search objects in the current room"""
-            room = room_info[current_room]
-            #print("check")
-            #print(room)
-            if not room["searchables"]:
-                print("There's nothing to search here.")
-            
-                print("You can search the following objects:")
-                for item in room["searchables"]:
-                    print(f"- {item}")
-            else:
-                print("\nWhat do you want to search? (or type 'leave' to stop searching)")
-                user_has_input = False
-                if user_has_input == True:
-                    raw = user_input
-                    if raw.strip().lower() == "quit":
-                        quit()
-                    choice = raw.strip().lower()
-
-                    if choice == "leave":
-                        print("You stop searching.")
-                        user_action = "main"
-                    elif choice in room["searchables"]:
-                        if choice == "blood_pool":
-                            inventory.append("Blood sample")
-                        item_id = room["searchables"][choice]
-                        print(f"\nYou search the {choice}...")
-                        print(items_info[item_id])
-                        print("\n")
-                        # stop after one search
-                    else:
-                        print("You can't search that here.")
-                user_has_input = False
-
-
 current_room = 0
 
 while True:
@@ -234,8 +207,14 @@ while True:
                 print("Direction? (type 'leave' to stay in the same place)")
                 user_action = "move"
 
+            elif user_input == "open notebook":
+                user_action = "open notebook"
+
             elif user_input == "talk":
                 user_action = "talk"
+
+            elif user_input == "place evidence":
+                user_action = "place evidence"
 
             elif user_input == "help":
                 user_action = "help"
@@ -243,8 +222,7 @@ while True:
             else:
                 print(f"I do not understand the command: {user_input}")
             user_has_input = False
-        elif user_action == "search":
-            if user_has_input == True:
+        elif user_action == "search" and user_has_input == True:
                     raw = user_input
                     if raw.strip().lower() == "quit":
                         quit()
@@ -254,16 +232,25 @@ while True:
                         print("You stop searching.")
                         user_action = "main"
                     elif choice in room["searchables"]:
-                        if choice == "blood_pool":
-                            inventory.append("Blood sample")
                         item_id = room["searchables"][choice]
                         print(f"\nYou search the {choice}...")
                         print(items_info[item_id])
-                        print("\n")
-                        # stop after one search
+
+                        # determine if this searchable yields an actual item to add
+                        item_name = items_lookup.get(choice)
+                        if item_name:
+                            if item_name not in inventory:
+                                inventory.append(item_name)
+                                print("You added it to your inventory.")
+                            else:
+                                print("You already have that item in your inventory.")
+                        else:
+                            print("You didn't find any usable item.")
+
+                        user_action = "main"  # stop after one search
                     else:
                         print("You can't search that here.")
-            user_has_input = False
+                    user_has_input = False
 
         elif user_action == "move" and user_has_input == True:
                 new_room = ""
@@ -316,8 +303,7 @@ while True:
         elif user_action == "speak" and user_has_input == True:
             if user_has_input == True:
                 input_sentence = user_input
-
-                if input_sentence == 4 and "Blood sample" in inventory and user_input == "Dexter":
+                if int(input_sentence) == 4 and "Blood sample" in inventory and who_speaking_to == "Dexter":
                     print(npc_convo[who_speaking_to]["outputs"][int(input_sentence)])
                 #This time it checks if the value given (now a number using int() to make the input a number) to check if that response is 
                 #in the npc_convo dictionary's subkatogory of the perons input like we did for the movement this time just a number so you dont have to type out the entire question.
@@ -356,6 +342,8 @@ while True:
                     print("\nThere are no exits from this room.")
             user_has_input = False
             user_action = "main"
+
+        elif user_action == "place evidence" and user_has_input == True:
 
         pygame.display.update()
         clock.tick(60)
