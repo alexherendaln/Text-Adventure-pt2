@@ -1,0 +1,361 @@
+import pygame
+from sys import exit
+
+pygame.init()
+screen = pygame.display.set_mode((800,400))
+pygame.display.set_caption("Text adventure")
+clock = pygame.time.Clock()
+game_run = True
+
+colour_name = "Red"
+base_font = pygame.font.Font(None, 32)
+user_text = ""
+
+input_rect = pygame.Rect(200,200,140,32)
+
+friend_surf =pygame.image.load("graphics/best_friend.png").convert_alpha()
+friend_surf = pygame.transform.scale(friend_surf,[200,200])
+
+room_info = {
+    0: {
+        "entrance_txt": "You are in the starter room. You see a dead body, and an entrance to the outside, type 'help' to get a kick start",
+        "searchables": {"fireplace":0, "cellphone": 1, "dead_body":2, "blood_pool":3, "rubbish":4, "furniture": 5},
+        "talks": {},
+        "exits": {"outside":1}
+    },
+    1: {
+        "entrance_txt": "you are outside and there's 3 people, his neighbor, his ex, his friend, and a homeless man",
+        "searchables": {},
+        "talks":{"neighbor":0,"ex":1,"friend":2,"homeless man":3},
+        "exits": {"inside":0, "outside policestation":2}
+    },
+    2:  {
+        "entrance_txt": "You've made your way to the front of the police station. There's 2 police officers outside, Doakes and Dexter",
+        "searchables": {},
+        "talks":{"Doakes":0,"Dexter":1},
+        "exits": {"outside apartment":1, "inside policestation":2}
+    },
+    3:  {
+        "entrance_txt": "You're inside the police station now, and you see the Police Chief",
+        "searchables": {},
+        "talks":{"Police Chief":0},
+        "exits": {"outside police station":2}
+    }
+}
+    
+items_info = {
+    0 : "the fire is burning and a gun in the flames, you scoop it out",
+    1 : "A cell phone with the last call to his ex",
+    2 : "You find a bullet after a deep search",
+    3 : "Test blood to identify body",
+    4 : "Extra large (used) condom, most likely used for a hooker",
+    5 : "You found nothing, or maybe you didn't search deep enough"
+}    
+
+npc_convo = {
+    "neighbor": { 
+        "inputs":{
+            0 : "What did you think of the victim?",
+            1 : "What were you doing the other day?",
+            2 : "What do you know about the victims best friend?",
+        },
+        "outputs":{
+            0 : "He was noisy and annoying",
+            1 : "I was at home watering my plants",
+            2 : "They were in a fight about a few months ago"
+        },
+    },
+    "friend": {
+        "inputs":{
+            0: "What were your relation to him?",
+            1: "Do you ever think he was anoying, or irritating?",
+        },
+        "outputs":{
+            0: "We've been really good friends for a long time, but since we became older we haven't talked that much",
+            1: "We had a pretty big argument a few months ago, but no, not necessarily"
+        },
+    },
+    "ex": {
+        "inputs":{
+            0: "When did you two break up, and was it hard?",
+            1: "How well do you know him, and for how long?",
+            2: "Have either one of you tried getting back with the other?",
+        },
+        "outputs":{
+            0: "We broke up about 6 months because i cheated on him with his friend. I think it was a bit hard for him, but he got over it i guess",
+            1: "we've known each other for like 7 years in highschool. We was like the cute couple everyone dreamt of being, but it just got bored at the end",
+            2: "He tried asking me out on a date like a month or two ago, but i rejected his little pity ass"
+        }
+    },
+    "homeless man":{
+        "inputs":{
+            0: "Do you know the guy that got killed?",
+            1: "Did you see or hear anything that could've led to his death?",
+            2: "Why the hell are you naked?",
+        },
+        "outputs":{
+            0: "You provoked the man, and he stabbed you to death",
+            1: "You provoked the man, and he stabbed you to death",
+            2: "You provoked the man, and he stabbed you to death"
+        },
+    },
+    "Doakes": {
+        "inputs": {
+            0: "Who are you suspicious of?",
+            1: "Why you be looking at Dexter like that?",
+            2: "Do you think this was a professional job?",
+            3: "How long have you been on the force?",
+        },
+        "outputs": {
+            0: "Everyone's a suspect until I say otherwise. But something about this case stinks...",
+            1: "That guy gives me the creeps. And i know he is up to something... i just can't prove it",
+            2: "Shot with a gun anyone could have done it really.",
+            3: "Been on the force for over a decade. Seen all kinds of scum, and I know when something doesn't add up like the weird guy by the van -Dexter-."
+        },
+    },
+    "Dexter": {
+        "inputs": {
+            0: "What exactly do you do for a living?",
+            1: "You seem tense, are you okay?",
+            2: "What do you think about Sergeant Doakes?",
+            3: "Do you think this done by a professional job?",
+        },
+        "outputs": {
+            0: "I'm a blood spatter analyst. Not really much to special...",
+            1: "I'm fine. Just... tired. These cases be making me feel like shit",
+            2: "Doakes? He's... persistent. Always watching me like I'm hiding something.",
+            3: "Yeah i dont know, not my area of specialty to answer if it was a pro that did it ask Doakes he would know",
+            4: "Oh yeah i can help, give me a minute...... and here i got it, it seems its someone on the police database who did this, but its blocked somehow, like someone doesnt want to be found out."
+        },
+    }
+}
+
+inventory = ["Police badge"]
+
+user_action = "main"
+
+user_has_input = False
+
+def quit_game():
+    pygame.quit()
+    exit()
+
+def search():
+            """Allows the player to search objects in the current room"""
+            room = room_info[current_room]
+            #print("check")
+            #print(room)
+            if not room["searchables"]:
+                print("There's nothing to search here.")
+            
+                print("You can search the following objects:")
+                for item in room["searchables"]:
+                    print(f"- {item}")
+            else:
+                print("\nWhat do you want to search? (or type 'leave' to stop searching)")
+                user_has_input = False
+                if user_has_input == True:
+                    raw = user_input
+                    if raw.strip().lower() == "quit":
+                        quit()
+                    choice = raw.strip().lower()
+
+                    if choice == "leave":
+                        print("You stop searching.")
+                        user_action = "main"
+                    elif choice in room["searchables"]:
+                        if choice == "blood_pool":
+                            inventory.append("Blood sample")
+                        item_id = room["searchables"][choice]
+                        print(f"\nYou search the {choice}...")
+                        print(items_info[item_id])
+                        print("\n")
+                        # stop after one search
+                    else:
+                        print("You can't search that here.")
+                user_has_input = False
+
+
+current_room = 0
+
+while True:
+        #if current_room = 0
+        screen.fill("White")
+        pygame.draw.rect(screen,colour_name,input_rect)
+        text_surface = base_font.render(user_text, True,"Black")
+        screen.blit(text_surface, (input_rect.x+5, input_rect.y+5))
+        screen.blit(friend_surf,(0,0))
+        
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit_game()
+        
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    print(user_text)
+                    user_text = user_text[:-1]
+                elif event.key == pygame.K_RETURN:
+                    print("enter")
+                    print(user_text)
+                    user_input = user_text
+                    user_text = ""
+                    user_has_input = True
+                else:
+                    user_text += event.unicode
+
+        if user_action == "main" and user_has_input == True:
+            print(room_info[current_room]["entrance_txt"])
+            #print("still in starter room")
+                # Enter the main loop, where the user can input commands.
+
+            if user_input == "quit":
+                pygame.quit()
+                exit()
+
+            elif user_input == "search":
+                if not room_info[current_room]["searchables"]:
+                    print("There's nothing to search here.")
+                
+                    print("You can search the following objects:")
+                    for item in room_info[current_room]["searchables"]:
+                        print(f"- {item}")
+                else:
+                    user_action = "search"
+                    """Allows the player to search objects in the current room"""
+                    room = room_info[current_room]
+                    print("\nWhat do you want to search? (or type 'leave' to stop searching)")
+
+            elif user_input == "move":
+                exits = room_info[current_room]["exits"]
+                print("You can go to the following places:")
+                for place in exits:
+                    print(f"- {place}")
+                print("Direction? (type 'leave' to stay in the same place)")
+                user_action = "move"
+
+            elif user_input == "talk":
+                user_action = "talk"
+
+            elif user_input == "help":
+                user_action = "help"
+
+            else:
+                print(f"I do not understand the command: {user_input}")
+            user_has_input = False
+        elif user_action == "search":
+            if user_has_input == True:
+                    raw = user_input
+                    if raw.strip().lower() == "quit":
+                        quit()
+                    choice = raw.strip().lower()
+
+                    if choice == "leave":
+                        print("You stop searching.")
+                        user_action = "main"
+                    elif choice in room["searchables"]:
+                        if choice == "blood_pool":
+                            inventory.append("Blood sample")
+                        item_id = room["searchables"][choice]
+                        print(f"\nYou search the {choice}...")
+                        print(items_info[item_id])
+                        print("\n")
+                        # stop after one search
+                    else:
+                        print("You can't search that here.")
+            user_has_input = False
+
+        elif user_action == "move" and user_has_input == True:
+                new_room = ""
+                direction = user_input
+                #checks if the given input is in the current room's exits
+                if direction in exits:
+                    new_room = exits[direction]
+                elif direction == "leave":
+                    new_room = None
+                else:
+                    # if this direction exists somewhere in the game but not from here,
+                    # inform the player that the location isn't unlocked from this room
+                    all_exits = set()
+                    for room in room_info.values():
+                        all_exits.update(room.get("exits", {}).keys())
+                    if direction in all_exits:
+                        print("this location hasn't been unlocked yet... Or maybe unlocked???")
+                    else:
+                        print("not a direction")
+
+                if new_room is None:
+                                print("You stay here")
+                elif new_room in room_info:
+                                current_room = new_room
+                                print(room_info[current_room]["entrance_txt"])
+                else:
+                                print("You can't go that way.")
+                user_has_input = False
+                user_action = "main"
+
+        elif user_action == "talk" and user_has_input == True:
+            #using the counter we can progresively show each line and at the same time print what number each line is
+            counter = 0
+            #repeats the print for each row there is in the dict's subcategory, given how different NPC's have differing amounts of options.
+            if user_input in npc_convo:
+                for row in npc_convo[user_input]["inputs"]:
+                    print(f"{counter}   {npc_convo[user_input]["inputs"][counter]}")
+                    counter += 1
+
+                if user_input == "Dexter" and "Blood sample" in inventory:
+                    print("4   Can you help me with analysing this blood?")
+                print('"leave" to leave the conversation')
+                user_has_input = False
+                who_speaking_to = user_input
+                user_action = "speak"
+            else:
+                 user_has_input = False
+                 print("not a valid person")
+            
+        elif user_action == "speak" and user_has_input == True:
+            if user_has_input == True:
+                input_sentence = user_input
+
+                if input_sentence == 4 and "Blood sample" in inventory and user_input == "Dexter":
+                    print(npc_convo[who_speaking_to]["outputs"][int(input_sentence)])
+                #This time it checks if the value given (now a number using int() to make the input a number) to check if that response is 
+                #in the npc_convo dictionary's subkatogory of the perons input like we did for the movement this time just a number so you dont have to type out the entire question.
+                if input_sentence == "leave":
+                    print(f"You left {user_input} for themselves\n")
+                    user_action = "main"
+                    
+                elif int(input_sentence) in npc_convo[who_speaking_to]["inputs"]:
+                    #to remind who were talking to and clearly state what the answer was
+                    print(f"{who_speaking_to} answers:")
+                    #this prints the output of the specific person given the input. 
+                    print (npc_convo[who_speaking_to]["outputs"][int(input_sentence)])
+                    if who_speaking_to == "homeless man" and "you provoked the man" in npc_convo[who_speaking_to]["outputs"][int(input_sentence)].lower():
+                        print("Wow, you really suck at this detective thing. Games over.")
+                        quit_game()
+                    #prints to empty lines for aesthetics
+                    print("\n")
+                else:
+                    print("not an input")
+            user_has_input = False
+
+        elif user_action == "help" and user_has_input == True:
+            print("Available commands:")
+            print("move: Move to a different location.")
+            print("search: Search the current location for items.")
+            print("talk: Talk to people in the current location.")
+            print("help: Show this help message.")
+            print("quit: Exit the game.")
+            print(f"In your inventory you have:\n {inventory}")
+            exits = room_info.get(current_room, {}).get("exits", {})
+            if exits:
+                    print("\nExits from this room:")
+                    for exit_name in exits:
+                        print(f"- {exit_name}")
+            else:
+                    print("\nThere are no exits from this room.")
+            user_has_input = False
+            user_action = "main"
+
+        pygame.display.update()
+        clock.tick(60)
