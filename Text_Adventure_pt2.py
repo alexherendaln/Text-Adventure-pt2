@@ -20,19 +20,15 @@ room_info = {
         "entrance_txt": "You've made your way to the front of the police station. There's 2 police officers outside, Doakes and Dexter",
         "searchables": {},
         "talks":{"Doakes":0,"Dexter":1},
-        "exits": {"outside apartment":1, "inside policestation":2}
+        "exits": {"outside apartment":1, "inside policestation":3}
     },
     3:  {
-        "entrance_txt": "You're inside the police station now, and you see the Police Chief",
+        "entrance_txt": "You're inside the police station now, and you see the Police Chief. There is a large desk where you can place the evidence you've collected.",
         "searchables": {},
         "talks":{"Police Chief":0},
         "exits": {"outside police station":2}
     },
-    4:  {"entrance_txt": "You are in the inspectors office. There is a large desk where you can place the evidence you've collected.",
-        "searchables": {},
-        "talks": {},
-        "exits": {"Outside police station":2},
-    }
+
     }
 
 #a simpler dictionary is like this one where instead of having many variables just lying around called item_1 we can bunch them into a dictionary
@@ -201,7 +197,7 @@ def look(current_room):
             print("You can't search that here.")
             
 def place_evidence(current_room):
-    if current_room != 4:
+    if current_room != 3:
         print("You need to be in the office of the inspector to place evidence.")
         return
     
@@ -507,7 +503,7 @@ def game_loop():
         elif cmd == "inventory":
             show_inventory()
             continue
-              elif cmd == "place evidence":
+        elif cmd == "place evidence":
             place_evidence(current_room)
 
         elif cmd == "notebook":
