@@ -152,6 +152,26 @@ evidence_table = []
 
 blood_collected = 0
 
+
+  REQUIRED_EVIDENCE = {
+        "Gun",
+        "Cellphone",
+        "Bullet",
+        "Blood sample",
+        "Used condom"
+    }
+
+    if set(evidence_table) == REQUIRED_EVIDENCE:
+        print("\nThe Inspector looks at the fully assembled evidence...")
+        print("He stares at you after having looked at the evidence")
+        print("\n'Well...', he whispers. 'You actually figured it out.'")
+        print("'That's a problem for me, detective.'")
+        print("\nHe reaches inside his coat and before you could even react...")
+        print("Kaplamo! he fires a shot")
+        print("\nYou fall as your visionn fades black")
+        print("\n 🥀🥀😭 GAME OVER — The Police Chief was the killer now you dead")
+        quit()
+
 def look(current_room):
     global blood_collected
     """Allows the player to search objects in the current room"""
