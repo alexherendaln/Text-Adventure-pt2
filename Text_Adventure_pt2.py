@@ -229,7 +229,6 @@ def look(current_room):
                 print("You didn't find any usable item.")
                 print("-----------------------------------------------------")
 
-            print("\n")
             return  # stop after one search
         else:
             print("-----------------------------------------------------")
@@ -373,7 +372,6 @@ def conversation(person):
                 print("-----------------------------------------------------")
                 quit()
             #prints to empty lines for aesthetics
-            print("\n")
         else:
             print("-----------------------------------------------------")
             print("not an input")
@@ -564,7 +562,6 @@ def help(current_room):
             for exit_name in exits:
                 print(f"- {exit_name}")
                 print("-----------------------------------------------------")
-                print("\n")
     else:
             print("\nThere are no exits from this room.")
 
@@ -581,6 +578,7 @@ def game_loop():
     # Enter the main loop, where the user can input commands.
     while True:
         raw = input("\n> ").strip()
+        print()  # Add blank line after user input
         if not raw:
             continue
 
@@ -647,7 +645,6 @@ def game_loop():
             print("-----------------------------------------------------")
             print("I do not understand the command:", raw)
             print("-----------------------------------------------------")
-            print("\n")
 
 # Start the game!
 
