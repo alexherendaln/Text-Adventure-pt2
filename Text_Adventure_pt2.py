@@ -137,12 +137,16 @@ npc_convo = {
 }
 
 def show_inventory():
+    print("-----------------------------------------------------")
     print("You have the following items in your inventory:")
+    print("-----------------------------------------------------")
     if not inventory:
         print("- (empty)")
+        print("-----------------------------------------------------")
         return
     for it in inventory:
             print(f"- {it}")    
+    print("-----------------------------------------------------")    
 
 # start inventory should be three separate items so they can be checked/appended correctly
 # start inventory should be a mutable list so items can be appended
@@ -162,27 +166,38 @@ def look(current_room):
     room = room_info[current_room]
 
     if not room["searchables"]:
+        print("-----------------------------------------------------")
         print("There's nothing to search here.")
+        print("-----------------------------------------------------")
         return
     
     while True:
+        print("-----------------------------------------------------")
         print("You can search the following objects:")
+        print("-----------------------------------------------------")
         for item in room["searchables"]:
             print(f"- {item}")
 
-        print("\nWhat do you want to search? (or type 'leave' to stop searching)")
+        print("-----------------------------------------------------")
+        print("What do you want to search? (or type 'leave' to stop searching)")
+        print("-----------------------------------------------------")
         raw = input(">")
         if raw.strip().lower() == "quit":
             quit()
         choice = raw.strip().lower()
 
         if choice == "leave":
+            print("-----------------------------------------------------")
             print("You stop searching.")
+            print("-----------------------------------------------------")
             return
         elif choice in room["searchables"]:
             item_id = room["searchables"][choice]
-            print(f"\nYou search the {choice}...")
+            print("-----------------------------------------------------")
+            print(f"You search the {choice}...")
+            print("-----------------------------------------------------")
             print(items_info[item_id])
+            print("-----------------------------------------------------")
 
             # determine if this searchable yields an actual item to add
             item_name = items_lookup.get(choice)
@@ -190,45 +205,67 @@ def look(current_room):
                 if item_name not in inventory:
                     inventory.append(item_name)
                     print("You added it to your inventory.")
+                    print("-----------------------------------------------------")
                 else:
                     print("You already have that item in your inventory.")
+                    print("-----------------------------------------------------")
             else:
                 print("You didn't find any usable item.")
+                print("-----------------------------------------------------")
 
             print("\n")
             return  # stop after one search
         else:
+            print("-----------------------------------------------------")
             print("You can't search that here.")
+            print("-----------------------------------------------------")
             
 def place_evidence(current_room):
     if current_room != 4:
+        print("-----------------------------------------------------")
         print("You need to be in the office of the inspector to place evidence.")
+        print("-----------------------------------------------------")
         return
     
     valid_evidence = [item for item in inventory if item != "Police badge"]
     if not valid_evidence:
+        print("-----------------------------------------------------")
         print("You have no evidence to place")
+        print("-----------------------------------------------------")
         return
+    print("-----------------------------------------------------")
     print("You can place the following evidences items on da table:")
+    print("-----------------------------------------------------")
     for i, item in enumerate(valid_evidence):
         print(f"{i}: {item}")
+        print("-----------------------------------------------------")
         print("which evidence do you want to place?(or type 'Leave' to cancel)")
+        print("-----------------------------------------------------")
         choice = input(">").strip().lower()
         if choice == "Leave":
+            print("-----------------------------------------------------")
             print("You decided not to place anything")
+            print("-----------------------------------------------------")
             return
         if not choice.isdigit() or int(choice) >= len(valid_evidence):
+            print("-----------------------------------------------------")
             print("Invalid choice.")
+            print("-----------------------------------------------------")
             return
         item_to_place = valid_evidence[int(choice)]
         if item_to_place in inventory:
+            print("-----------------------------------------------------")
             print("You have already placed that item.")
+            print("-----------------------------------------------------")
             return
         evidence_table.append(item_to_place)
+        print("-----------------------------------------------------")
         print(f"You place {item_to_place} on the Inspector's desk.")
+        print("-----------------------------------------------------")
         if len(evidence_table) == 3:
             print("\nThe Inspector reviews the evidence carefully...")
             print("'This could be enough evidence to crack the case'he says.\n")
+            print("-----------------------------------------------------")
         
 
 def move(current_room):
@@ -237,11 +274,15 @@ def move(current_room):
     while True:
         # show available exits for the current room
         exits = room_info[current_room]["exits"]
+        print("-----------------------------------------------------")
         print("You can go to the following places:")
+        print("-----------------------------------------------------")
         for place in exits:
             print(f"- {place}")
 
+        print("-----------------------------------------------------")
         print("Direction? (type 'leave' to stay in the same place)")
+        print("-----------------------------------------------------")
         raw = input(">").strip()
         if raw.lower() == "quit":
             quit()
@@ -259,9 +300,13 @@ def move(current_room):
             for room in room_info.values():
                 all_exits.update(room.get("exits", {}).keys())
             if direction in all_exits:
+                print("-----------------------------------------------------")
                 print("this location hasn't been unlocked yet... Or maybe unlocked???")
+                print("-----------------------------------------------------")
             else:
+                print("-----------------------------------------------------")
                 print("not a direction")
+                print("-----------------------------------------------------")
             continue
 
 def print_inputs(person):
@@ -276,42 +321,57 @@ def conversation(person):
     #a loop that continues until we either get a valid answer or a leave
     while True:
         #uses the function print_inputs to display each line ofr itself instead of just using print(npc_convo[person]["inputs"]) which would print it all at once and not clearly represent what number each input is.
+        print("-----------------------------------------------------")
         print_inputs(person)
         if person == "Dexter" and "Blood sample" in inventory:
             print("4   Can you help me with analysing this blood?")
 
+        print("-----------------------------------------------------")
         print('"leave" to leave the conversation')
+        print("-----------------------------------------------------")
         raw = input(">")
         if raw.strip().lower() == "quit":
             quit()
         input_sentence = raw.strip()
 
         if input_sentence == 4 and "Blood sample" in inventory and person == "Dexter":
+            print("-----------------------------------------------------")
             print(npc_convo[person]["outputs"][int(input_sentence)])
+            print("-----------------------------------------------------")
         #This time it checks if the value given (now a number using int() to make the input a number) to check if that response is 
         #in the npc_convo dictionary's subkatogory of the perons input like we did for the movement this time just a number so you dont have to type out the entire question.
         if input_sentence == "leave":
+            print("-----------------------------------------------------")
             print(f"You left {person} for themselves\n")
+            print("-----------------------------------------------------")
             return
         if int(input_sentence) in npc_convo[person]["inputs"]:
             #to remind who were talking to and clearly state what the answer was
+            print("-----------------------------------------------------")
             print(f"{person} answers:")
+            print("-----------------------------------------------------")
             #this prints the output of the specific person given the input. 
             print (npc_convo[person]["outputs"][int(input_sentence)])
+            print("-----------------------------------------------------")
             if person == "homeless man" and "you provoked the man" in npc_convo[person]["outputs"][int(input_sentence)].lower():
                 print("Wow, you really suck at this detective thing. Games over.")
+                print("-----------------------------------------------------")
                 quit()
             #prints to empty lines for aesthetics
             print("\n")
         else:
+            print("-----------------------------------------------------")
             print("not an input")
+            print("-----------------------------------------------------")
             continue
 
 def talk_to_person(current_room):
 
     #a loop that continues until we either get a valid answer or a leave
     while True:
+        print("-----------------------------------------------------")
         print("Who do you want to talk to?")
+        print("-----------------------------------------------------")
         raw = input(">")
         if raw.strip().lower() == "quit":
             quit()
@@ -325,27 +385,35 @@ def talk_to_person(current_room):
         elif person == "leave":
             return
         else:
+            print("-----------------------------------------------------")
             print("not a person")
+            print("-----------------------------------------------------")
             continue
 
 def notebook():
     """Interactive notebook where players can add, edit, delete, and view notes."""
+    print("-----------------------------------------------------")
     print("\n--- NOTEBOOK ---")
     print("Press Enter with empty input to exit.\n")
+    print("-----------------------------------------------------")
     
     while True:
         print("\nNOTEBOOK MENU:")
+        print("-----------------------------------------------------")
         print("1. View notes")
         print("2. Add note")
         print("3. Edit note")
         print("4. Delete note")
         print("(Press Enter to exit)")
+        print("-----------------------------------------------------")
         
         raw = input("> ").strip()
         
         # Exit if empty input
         if raw == "":
+            print("-----------------------------------------------------")
             print("Exiting notebook.\n")
+            print("-----------------------------------------------------")
             return
         
         if raw.lower() == "quit":
@@ -356,29 +424,44 @@ def notebook():
         if choice == "1":
             # View notes
             if not notes:
+                print("-----------------------------------------------------")
                 print("\nYou have no notes yet.")
+                print("-----------------------------------------------------")
             else:
+                print("-----------------------------------------------------")
                 print("\n--- YOUR NOTES ---")
+                print("-----------------------------------------------------")
                 for i, note in enumerate(notes, 1):
                     print(f"{i}. {note}")
+                print("-----------------------------------------------------")
         
         elif choice == "2":
             # Add note
+            print("-----------------------------------------------------")
             note_text = input("Write your note: ").strip()
             if note_text:
                 notes.append(note_text)
+                print("-----------------------------------------------------")
                 print(f"Note added: '{note_text}'")
+                print("-----------------------------------------------------")
             else:
+                print("-----------------------------------------------------")
                 print("No note was written.")
+                print("-----------------------------------------------------")
         
         elif choice == "3":
             # Edit note
             if not notes:
+                print("-----------------------------------------------------")
                 print("\nYou have no notes to edit.")
+                print("-----------------------------------------------------")
             else:
+                print("-----------------------------------------------------")
                 print("\n--- YOUR NOTES ---")
+                print("-----------------------------------------------------")
                 for i, note in enumerate(notes, 1):
                     print(f"{i}. {note}")
+                print("-----------------------------------------------------")
                 
                 note_choice = input("Which note do you want to edit? (number): ").strip()
                 if note_choice.isdigit():
@@ -388,36 +471,57 @@ def notebook():
                         if new_text:
                             old_text = notes[note_index]
                             notes[note_index] = new_text
+                            print("-----------------------------------------------------")
                             print(f"Note updated from '{old_text}' to '{new_text}'")
+                            print("-----------------------------------------------------")
                         else:
+                            print("-----------------------------------------------------")
                             print("No new text was written.")
+                            print("-----------------------------------------------------")
                     else:
+                        print("-----------------------------------------------------")
                         print("Invalid note number.")
+                        print("-----------------------------------------------------")
                 else:
+                    print("-----------------------------------------------------")
                     print("Please enter a valid number.")
+                    print("-----------------------------------------------------")
         
         elif choice == "4":
             # Delete note
             if not notes:
+                print("-----------------------------------------------------")
                 print("\nYou have no notes to delete.")
+                print("-----------------------------------------------------")
             else:
+                print("-----------------------------------------------------")
                 print("\n--- YOUR NOTES ---")
+                print("-----------------------------------------------------")
                 for i, note in enumerate(notes, 1):
                     print(f"{i}. {note}")
+                print("-----------------------------------------------------")
                 
                 note_choice = input("Which note do you want to delete? (number): ").strip()
                 if note_choice.isdigit():
                     note_index = int(note_choice) - 1
                     if 0 <= note_index < len(notes):
                         deleted_note = notes.pop(note_index)
+                        print("-----------------------------------------------------")
                         print(f"Note deleted: '{deleted_note}'")
+                        print("-----------------------------------------------------")
                     else:
+                        print("-----------------------------------------------------")
                         print("Invalid note number.")
+                        print("-----------------------------------------------------")
                 else:
+                    print("-----------------------------------------------------")
                     print("Please enter a valid number.")
+                    print("-----------------------------------------------------")
         
         else:
+            print("-----------------------------------------------------")
             print("I do not understand that command.")
+            print("-----------------------------------------------------")
 
 ### The main game loop ###
 
@@ -456,10 +560,12 @@ def game_loop():
     current_room = 0
 
     # Display the room that we start in
+    print("-----------------------------------------------------")
     print(room_info[current_room]["entrance_txt"])
+    print("-----------------------------------------------------")
     # Enter the main loop, where the user can input commands.
     while True:
-        raw = input("> ").strip()
+        raw = input("\n> ").strip()
         if not raw:
             continue
 
@@ -489,15 +595,21 @@ def game_loop():
             # protect against invalid room values
             if new_room in room_info:
                 current_room = new_room
+                print("-----------------------------------------------------")
                 print(room_info[current_room]["entrance_txt"])
+                print("-----------------------------------------------------")
             else:
+                print("-----------------------------------------------------")
                 print("You can't go that way.")
+                print("-----------------------------------------------------")
             continue
 
         elif cmd == "talk":
             # Prevent talking in room 0
             if current_room == 0:
+                print("-----------------------------------------------------")
                 print("There is no one to talk to here.")
+                print("-----------------------------------------------------")
                 continue
             talk_to_person(current_room)
             continue
@@ -517,7 +629,9 @@ def game_loop():
             continue
 
         else:
+            print("-----------------------------------------------------")
             print("I do not understand the command:", raw)
+            print("-----------------------------------------------------")
             print("\n")
 
 # Start the game!
