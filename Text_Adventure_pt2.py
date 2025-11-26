@@ -157,7 +157,7 @@ evidence_table = []
 blood_collected = 0
 
 
-  REQUIRED_EVIDENCE = {
+REQUIRED_EVIDENCE = {
         "Gun",
         "Cellphone",
         "Bullet",
@@ -165,7 +165,7 @@ blood_collected = 0
         "Used condom"
     }
 
-    if set(evidence_table) == REQUIRED_EVIDENCE:
+if set(evidence_table) == REQUIRED_EVIDENCE:
         print("\nThe Inspector looks at the fully assembled evidence...")
         print("He stares at you after having looked at the evidence")
         print("\n'Well...', he whispers. 'You actually figured it out.'")
