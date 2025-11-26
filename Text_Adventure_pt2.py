@@ -376,8 +376,9 @@ def notebook():
                 for i, note in enumerate(notes, 1):
                     print(f"{i}. {note}")
                 
-                try:
-                    note_index = int(input("Which note do you want to edit? (number): ").strip()) - 1
+                note_choice = input("Which note do you want to edit? (number): ").strip()
+                if note_choice.isdigit():
+                    note_index = int(note_choice) - 1
                     if 0 <= note_index < len(notes):
                         new_text = input("Write the new text: ").strip()
                         if new_text:
@@ -388,7 +389,7 @@ def notebook():
                             print("No new text was written.")
                     else:
                         print("Invalid note number.")
-                except ValueError:
+                else:
                     print("Please enter a valid number.")
         
         elif choice == "4":
@@ -400,14 +401,15 @@ def notebook():
                 for i, note in enumerate(notes, 1):
                     print(f"{i}. {note}")
                 
-                try:
-                    note_index = int(input("Which note do you want to delete? (number): ").strip()) - 1
+                note_choice = input("Which note do you want to delete? (number): ").strip()
+                if note_choice.isdigit():
+                    note_index = int(note_choice) - 1
                     if 0 <= note_index < len(notes):
                         deleted_note = notes.pop(note_index)
                         print(f"Note deleted: '{deleted_note}'")
                     else:
                         print("Invalid note number.")
-                except ValueError:
+                else:
                     print("Please enter a valid number.")
         
         else:
