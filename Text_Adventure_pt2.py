@@ -146,7 +146,7 @@ def show_inventory():
 
 # start inventory should be three separate items so they can be checked/appended correctly
 # start inventory should be a mutable list so items can be appended
-inventory = ["Police badge", "Notebook", "Pen"]
+inventory = ["Police badge", "Notebook", "Pen","purse"]
 
 # global notebook storage
 notes = []
@@ -161,8 +161,7 @@ REQUIRED_EVIDENCE = {
         "Gun",
         "Cellphone",
         "Bullet",
-        "Blood sample",
-        "Used condom"
+        "Blood sample"
     }
 
 if set(evidence_table) == REQUIRED_EVIDENCE:
@@ -236,13 +235,12 @@ def look(current_room):
             print("-----------------------------------------------------")
             
 def place_evidence(current_room):
-    if current_room != 4:
+    if current_room != 3:
         print("You need to be in the office of the inspector to place evidence.")
         print("-----------------------------------------------------")
         return
-    
-    valid_evidence = [item for item in inventory if item != "Police badge"]
-    if not valid_evidence:
+    print(f"On the table is: {evidence_table}")
+    if not inventory:
         print("-----------------------------------------------------")
         print("You have no evidence to place")
         print("-----------------------------------------------------")
@@ -250,37 +248,32 @@ def place_evidence(current_room):
     print("-----------------------------------------------------")
     print("You can place the following evidences items on da table:")
     print("-----------------------------------------------------")
-    for i, item in enumerate(valid_evidence):
-        print(f"{i}: {item}")
-        print("-----------------------------------------------------")
-        print("which evidence do you want to place?(or type 'Leave' to cancel)")
-        print("-----------------------------------------------------")
-        choice = input(">").strip().lower()
-        if choice == "Leave":
+    for i, item in enumerate(inventory):
+        print(f"{i}: {inventory[i]}")
+    print("-----------------------------------------------------")
+    print("which evidence do you want to place?(or type 'Leave' to cancel)")
+    print("-----------------------------------------------------")
+    choice = input(">").strip().lower()
+    if choice == "Leave":
             print("-----------------------------------------------------")
             print("You decided not to place anything")
             print("-----------------------------------------------------")
             return
-        if not choice.isdigit() or int(choice) >= len(valid_evidence):
+    if not choice.isdigit() or int(choice) >= len(inventory):
             print("-----------------------------------------------------")
             print("Invalid choice.")
             print("-----------------------------------------------------")
             return
-        item_to_place = valid_evidence[int(choice)]
-        if item_to_place in inventory:
-            print("-----------------------------------------------------")
-            print("You have already placed that item.")
-            print("-----------------------------------------------------")
-            return
-        evidence_table.append(item_to_place)
-        print("-----------------------------------------------------")
-        print(f"You place {item_to_place} on the Inspector's desk.")
-        print("-----------------------------------------------------")
-        if len(evidence_table) == 3:
+    item_to_place = inventory[int(choice)]
+    evidence_table.append(item_to_place)
+    print("-----------------------------------------------------")
+    print(f"You place {item_to_place} on the Inspector's desk.")
+    print("-----------------------------------------------------")
+    if len(evidence_table) == 3:
             print("\nThe Inspector reviews the evidence carefully...")
             print("'This could be enough evidence to crack the case'he says.\n")
             print("-----------------------------------------------------")
-        
+            return
 
 def move(current_room):
 
@@ -569,7 +562,7 @@ def game_loop():
     """Main loop of the game - this is where the fun happens."""
 
     # We start in room 0
-    current_room = 0
+    current_room = 3
 
     # Display the room that we start in
     print("-----------------------------------------------------")
